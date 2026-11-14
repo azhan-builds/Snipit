@@ -86,9 +86,33 @@ function Edit-Snippet($nickname) {
     }
     else {
         write-host "invalid option"
+        return
     }
     $snippets | Convertto-json -Depth 5 | set-content $database
     write-host "Snippet '$nickname' updated successfully"
+}
+
+function Delete-Snippet($nickname){
+    if(!(test-path $database)){
+        write-host "No snippets found yet"
+        return
+    }
+
+    $snippets = Get-content $database -Raw | Convertfrom-json
+    if (!($snippets.PSObject.properties.Name -contains $nickname)){
+        write-host "Couldn't find a snippet with that name"
+        return
+    }
+
+    $confirm = read-host "are you sure you want to delete '$nickname'? (y/n)"
+    if ($confirm -eq "y"){
+        $snippets.PSobject.properties.remove($nickname)
+        $snippets |convertto-json -depth 5 | set-content $database
+        write-host "snippet deleted successfully"
+    }
+    else{
+        write-host "Deletion cancelled"
+    }
 }
 
 $action = read-host "What do you want to do?"
@@ -106,6 +130,10 @@ elseif ($action -eq "show"){
 elseif ($action -eq "edit"){
     $nickname = read-host "which snippet do you want to edit?"
     Edit-Snippet($nickname)
+}
+elseif ($action -eq "delete"){
+    $nickname = read-host "which snippet should be deleted?"
+    Delete-Snippet($nickname)
 }
 else {
     Write-host "Unknown command!"

@@ -1,6 +1,6 @@
 {
     "deploy":  {
-                   "command":  "git commit -m",
-                   "description":  "commits"
+                   "command":  "git add  .",
+                   "description":  "it deploys"
                }
 }
