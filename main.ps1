@@ -40,6 +40,24 @@ function List-Snippets {
     }
 }
 
+function Show-Snippet($nickname) {
+    if (!(test-path $database)) {
+        write-host "no snippets found yet"
+        return
+    }
+
+    $snippets = Get-content $database -Raw | Convertfrom-Json
+    if (!($snippets.PSobject.properties.Name -contains $nickname)){
+        write-host "no snippets foound under that name"
+        return
+    }
+    write-host "`nSnippet: $nickname" -foregroundcolor cyan
+    write-host "Description: $($snippets.$nickname.description)"
+    write-host ""
+    write-host "Command:"
+    write-host $snippets.$nickname.command -foregroundcolor yellow
+}
+
 $action = read-host "What do you want to do?"
 if ($action -eq "add") {
     $nickname = Read-host "Give your command a nickname"
@@ -47,6 +65,10 @@ if ($action -eq "add") {
 }
 elseif ($action -eq "list") {
     List-Snippets
+}
+elseif ($action -eq "show"){
+    $nickname = read-host "Which snippet do you want to see?"
+    Show-Snippet($nickname)
 }
 else {
     Write-host "Unknown command!"
