@@ -1,0 +1,6 @@
+{
+    "deploy":  {
+                   "command":  "git add",
+                   "description":  "deploys"
+               }
+}
