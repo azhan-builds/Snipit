@@ -58,6 +58,39 @@ function Show-Snippet($nickname) {
     write-host $snippets.$nickname.command -foregroundcolor yellow
 }
 
+function Edit-Snippet($nickname) {
+    if (!(test-path $database)){
+        write-host "No snippets found yet"
+        return
+    }
+    $snippets = Get-content $database -Raw | Convertfrom-Json
+    if (!($snippets.PSobject.properties.name -contains $nickname)){
+        write-host "couldn't find a snippet  under that name"
+        return
+    }
+    write-host "`nWhat do you want to change?"
+    write-host "1. Command"
+    write-host "2. Description"
+    write-host "3. Both"
+    $choice = read-host "Choose an option"
+
+    if ($choice -eq "1"){
+        $snippets.$nickname.command = Read-host "enter the new command"
+    }
+    elseif ($choice -eq "2"){
+        $snippets.$nickname.description = read-host "enter the new description"
+    }
+    elseif ($choice -eq "3"){
+        $snippets.$nickname.command = read-host "Enter the new command"
+        $snippets.$nickname.description = read-host "Enter the new description"
+    }
+    else {
+        write-host "invalid option"
+    }
+    $snippets | Convertto-json -Depth 5 | set-content $database
+    write-host "Snippet '$nickname' updated successfully"
+}
+
 $action = read-host "What do you want to do?"
 if ($action -eq "add") {
     $nickname = Read-host "Give your command a nickname"
@@ -69,6 +102,10 @@ elseif ($action -eq "list") {
 elseif ($action -eq "show"){
     $nickname = read-host "Which snippet do you want to see?"
     Show-Snippet($nickname)
+}
+elseif ($action -eq "edit"){
+    $nickname = read-host "which snippet do you want to edit?"
+    Edit-Snippet($nickname)
 }
 else {
     Write-host "Unknown command!"
